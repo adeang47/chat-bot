@@ -4,6 +4,7 @@ from django.utils import timezone
 from users.models import User
 
 
+# Topic of a question
 class Topic(models.Model):
     name = models.CharField(max_length=255)
     create_date = models.DateTimeField(default=timezone.now)
@@ -12,6 +13,7 @@ class Topic(models.Model):
         return self.name
 
 
+# Mapping of topics to create a graph-like structure
 class TopicMap(models.Model):
     parent_topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='parent_topic')
     sub_topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='sub_topic')
@@ -23,10 +25,11 @@ class QuestionManager(models.Manager):
         return super(QuestionManager, self).create(*args, **kwargs)
 
 
+# Root Question, which is displayed to Users to adjust
 class Question(models.Model):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    original_text = models.CharField(max_length=4000)
-    current_text = models.CharField(max_length=4000)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE) # related topic
+    original_text = models.CharField(max_length=4000) # the original text from object creation
+    current_text = models.CharField(max_length=4000) # show the latest text from a QuestionChange
     create_date = models.DateTimeField(default=timezone.now)
     update_date = models.DateTimeField(default=timezone.now)
     objects = QuestionManager()
@@ -38,11 +41,12 @@ class Question(models.Model):
 class QuestionChangeManager(models.Manager):
     def create(self, *args, **kwargs):
         q = kwargs['question']
-        q.current_text = kwargs['text']
+        q.current_text = kwargs['text'] # set the related Question current text to the text of this object
         q.save()
         return super(QuestionChangeManager, self).create(*args, **kwargs)
 
 
+# Mark the changes that have been made to the text of a question
 class QuestionChange(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(max_length=4000)
@@ -57,6 +61,7 @@ class QuestionChange(models.Model):
         self.question.save()
 
 
+# User responses to a question
 class QuestionResponse(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=4000)

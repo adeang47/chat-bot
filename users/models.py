@@ -7,6 +7,7 @@ class UserManager(BaseUserManager):
     pass
 
 
+# Base User, currently unused, but can be linked to Question Responses
 class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
 

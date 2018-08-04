@@ -5,6 +5,7 @@ from app.forms import QuestionChangeForm
 from app.models import Question, QuestionChange
 
 
+# Root view
 class IndexView(TemplateView):
     template_name = 'app/index.html'
 
@@ -28,6 +29,7 @@ class IndexView(TemplateView):
         return render(request, 'app/index.html', {'form': form})
 
 
+# Display the changes to a Question over time
 class QuestionChangesView(TemplateView):
     template_name = 'app/questionChanges.html'
 
